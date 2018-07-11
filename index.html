@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script>
+        function showlist(str, typesearch) {
+
+
+          if (str == "") {document.getElementById("txtHint").innerHTML = "";}
+          if (window.XMLHttpRequest) {
+              // code for IE7+, Firefox, Chrome, Opera, Safari
+              xmlhttp = new XMLHttpRequest();
+          } else {
+              // code for IE6, IE5
+              xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+          }
+
+          xmlhttp.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 200) {
+                //  document.getElementById("txtHint").innerHTML = "qwerty " + this.responseText;//print de response
+
+                  if (typesearch == "list"){
+                    let myArray = JSON.parse(xmlhttp.responseText);
+
+                     Printarray(myArray);
+                   }
+
+                  if (typesearch == "answer"){
+                    parseJson(xmlhttp.responseText);
+                  }
+              }
+          };
+          xmlhttp.open("GET","Country.php?q="+str+"&type="  + typesearch,true);
+          xmlhttp.send();
+
+        }
+
+
+  function Printarray(arr) {
+    let out ="";
+    let i;
+    for (i = 0; i < arr.length; i++) {
+  out += '<span id="' + arr[i] + '" onClick="showlist(this.id,\'answer\')">' + arr[i] + '</span><br>';}
+  document.getElementById("txtHint").innerHTML = out;
+  }
+
+      function parseJson(result) {
+        let result2 = JSON.parse(result);
+        let result3 = result2[0];
+
+        let displayString = "<h1>" + result3['Name'] + "</h1><table>";
+        for (let[key,value] of Object.entries(result3)) {
+          displayString += "<tr><td>" + key + "</td><td>" + value + "</td></tr>";
+        }
+        displayString += "</table>";
+        document.getElementById("txtHint").innerHTML = displayString;
+      }
+
+
+    </script>
+  </head>
+  <body style="background-color:gray">
+    <input type="text" id="searchCountry" placeholder="zoek een land">
+    <div id="txtHint">hier komt de lijst</div>
+    <script>
+      const searchCountry = document.getElementById("searchCountry");
+      searchCountry.addEventListener('keyup',function () {
+      showlist(searchCountry.value,'list');
+      });
+    </script>
+
+    </div>
+  </body>
+</html>
